@@ -18,7 +18,7 @@ public class Main {
             System.out.println("5. Thoát");
             System.out.print("Chọn chức năng: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:

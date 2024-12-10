@@ -11,43 +11,112 @@ import java.util.Scanner;
 public class PhoneController {
     private List<Phone> phoneList = new ArrayList<>();
 
-    // Thêm điện thoại mới
     public void addPhoneFromInput(Scanner scanner) {
+        String id = phoneList.isEmpty()
+                ? "1"
+                : String.valueOf(Integer.parseInt(phoneList.get(phoneList.size() - 1).getId()) + 1);
+
+        System.out.println("ID tự động gán cho điện thoại mới: " + id);
+
         System.out.println("Chọn loại điện thoại:");
         System.out.println("1. Điện thoại chính hãng");
         System.out.println("2. Điện thoại xách tay");
         int type = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine();
 
-        System.out.print("Nhập ID: ");
-        String id = scanner.nextLine();
         System.out.print("Nhập tên điện thoại: ");
-        String name = scanner.nextLine();
-        System.out.print("Nhập giá bán: ");
-        double price = scanner.nextDouble();
-        System.out.print("Nhập số lượng: ");
-        int quantity = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        String name = scanner.nextLine().trim();
+        while (name.isEmpty()) {
+            System.out.println("Tên điện thoại là bắt buộc. Vui lòng nhập lại.");
+            System.out.print("Nhập tên điện thoại: ");
+            name = scanner.nextLine().trim();
+        }
+
+        double price = -1;
+        while (price <= 0) {
+            System.out.print("Nhập giá bán (số dương): ");
+            if (scanner.hasNextDouble()) {
+                price = scanner.nextDouble();
+                if (price <= 0) {
+                    System.out.println("Giá bán phải là số dương. Vui lòng nhập lại.");
+                }
+            } else {
+                System.out.println("Giá bán không hợp lệ. Vui lòng nhập lại.");
+                scanner.next();
+            }
+        }
+
+        int quantity = -1;
+        while (quantity <= 0) {
+            System.out.print("Nhập số lượng (số dương): ");
+            if (scanner.hasNextInt()) {
+                quantity = scanner.nextInt();
+                if (quantity <= 0) {
+                    System.out.println("Số lượng phải là số dương. Vui lòng nhập lại.");
+                }
+            } else {
+                System.out.println("Số lượng không hợp lệ. Vui lòng nhập lại.");
+                scanner.next();
+            }
+        }
+        scanner.nextLine();
+
         System.out.print("Nhập nhà sản xuất: ");
-        String manufacturer = scanner.nextLine();
+        String manufacturer = scanner.nextLine().trim();
+        while (manufacturer.isEmpty()) {
+            System.out.println("Nhà sản xuất là bắt buộc. Vui lòng nhập lại.");
+            System.out.print("Nhập nhà sản xuất: ");
+            manufacturer = scanner.nextLine().trim();
+        }
 
         if (type == 1) {
-            System.out.print("Nhập thời gian bảo hành (tháng): ");
-            int warrantyPeriod = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-            System.out.print("Nhập phạm vi bảo hành (trong nước/quốc tế): ");
-            String warrantyScope = scanner.nextLine();
+            int warrantyPeriod = -1;
+            while (warrantyPeriod <= 0 || warrantyPeriod > 730) {
+                System.out.print("Nhập thời gian bảo hành (tối đa 730 ngày): ");
+                if (scanner.hasNextInt()) {
+                    warrantyPeriod = scanner.nextInt();
+                    if (warrantyPeriod <= 0 || warrantyPeriod > 730) {
+                        System.out.println("Thời gian bảo hành phải là số dương và không quá 730 ngày. Vui lòng nhập lại.");
+                    }
+                } else {
+                    System.out.println("Thời gian bảo hành không hợp lệ. Vui lòng nhập lại.");
+                    scanner.next();
+                }
+            }
+            scanner.nextLine();
+
+            System.out.print("Nhập phạm vi bảo hành (Toan Quoc/Quoc Te): ");
+            String warrantyScope = scanner.nextLine().trim();
+            while (!warrantyScope.equals("Toan Quoc") && !warrantyScope.equals("Quoc Te")) {
+                System.out.println("Phạm vi bảo hành không hợp lệ. Chỉ chấp nhận 'Toan Quoc' hoặc 'Quoc Te'.");
+                System.out.print("Nhập phạm vi bảo hành (Toan Quoc/Quoc Te): ");
+                warrantyScope = scanner.nextLine().trim();
+            }
+
             phoneList.add(new OfficialPhone(id, name, price, quantity, manufacturer, warrantyPeriod, warrantyScope));
         } else if (type == 2) {
             System.out.print("Nhập quốc gia xách tay: ");
-            String importedCountry = scanner.nextLine();
-            System.out.print("Nhập trạng thái (đã kích hoạt/chưa kích hoạt): ");
-            String status = scanner.nextLine();
+            String importedCountry = scanner.nextLine().trim();
+            while (importedCountry.equals("Viet Nam")) {
+                System.out.println("Quốc gia xách tay không được là 'Viet Nam'. Vui lòng nhập lại.");
+                System.out.print("Nhập quốc gia xách tay: ");
+                importedCountry = scanner.nextLine().trim();
+            }
+
+            System.out.print("Nhập trạng thái (Da sua chua/Chua sua chua): ");
+            String status = scanner.nextLine().trim();
+            while (!status.equals("Da sua chua") && !status.equals("Chua sua chua")) {
+                System.out.println("Trạng thái không hợp lệ. Chỉ chấp nhận 'Da sua chua' hoặc 'Chua sua chua'.");
+                System.out.print("Nhập trạng thái (Da sua chua/Chua sua chua): ");
+                status = scanner.nextLine().trim();
+            }
+
             phoneList.add(new ImportedPhone(id, name, price, quantity, manufacturer, importedCountry, status));
         } else {
             System.out.println("Loại điện thoại không hợp lệ!");
         }
-        System.out.println("Đã thêm điện thoại thành công!");
+
+        System.out.println("Đã thêm điện thoại thành công với ID: " + id);
     }
 
     // Xóa điện thoại
