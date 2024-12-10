@@ -14,7 +14,7 @@ public class Main {
             System.out.println("1. Thêm mới");
             System.out.println("2. Xóa");
             System.out.println("3. Xem danh sách điện thoại");
-            System.out.println("4. Tìm kiếm");
+            System.out.println("4. Tìm kiếm ");
             System.out.println("5. Thoát");
             System.out.print("Chọn chức năng: ");
             int choice = scanner.nextInt();
@@ -31,7 +31,7 @@ public class Main {
                     phoneController.displayAllPhones();
                     break;
                 case 4:
-                    phoneController.searchPhoneById(scanner);
+                    phoneController.searchPhonesByKeyword(scanner);
                     break;
                 case 5:
                     System.out.println("Cảm ơn bạn đã sử dụng chương trình!");

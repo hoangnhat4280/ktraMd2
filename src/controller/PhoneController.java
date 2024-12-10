@@ -188,18 +188,21 @@ public class PhoneController {
     }
 
     // Tìm kiếm điện thoại theo ID
-    public void searchPhoneById(Scanner scanner) {
-        System.out.print("Nhập ID điện thoại cần tìm: ");
-        String id = scanner.nextLine();
-        Phone phone = phoneList.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-
-        if (phone != null) {
-            phone.displayInfo();
+    public void searchPhonesByKeyword(Scanner scanner) {
+        System.out.print("Nhập từ khóa tìm kiếm (ID hoặc Tên): ");
+        String keyword = scanner.nextLine().trim().toLowerCase();
+        List<Phone> matchedPhones = phoneList.stream()
+                .filter(phone -> phone.getId().toLowerCase().contains(keyword) ||
+                        phone.getName().toLowerCase().contains(keyword))
+                .toList();
+        if (matchedPhones.isEmpty()) {
+            System.out.println("Không tìm thấy kết quả phù hợp với từ khóa: " + keyword);
         } else {
-            System.out.println("Không tìm thấy điện thoại với ID: " + id);
+            System.out.println("Kết quả tìm kiếm:");
+            for (Phone phone : matchedPhones) {
+                phone.displayInfo();
+                System.out.println();
+            }
         }
     }
 }
