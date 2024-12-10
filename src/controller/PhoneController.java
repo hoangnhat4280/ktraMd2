@@ -1,8 +1,10 @@
 package controller;
 
+import exception.NotFoundProductException;
 import model.OfficialPhone;
 import model.ImportedPhone;
 import model.Phone;
+import storage.FileCSV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,15 @@ import java.util.Scanner;
 
 public class PhoneController {
     private List<Phone> phoneList = new ArrayList<>();
+    public PhoneController() {
+        phoneList = FileCSV.readPhonesFromCSV();
+    }
+
+    public void savePhonesToFile() {
+        FileCSV.writePhonesToCSV(phoneList);
+    }
+
+
 
     public void addPhoneFromInput(Scanner scanner) {
         String id = phoneList.isEmpty()
@@ -24,6 +35,7 @@ public class PhoneController {
         int type = scanner.nextInt();
         scanner.nextLine();
 
+        // Nhập thông tin chung
         System.out.print("Nhập tên điện thoại: ");
         String name = scanner.nextLine().trim();
         while (name.isEmpty()) {
@@ -69,7 +81,9 @@ public class PhoneController {
             manufacturer = scanner.nextLine().trim();
         }
 
+        // Xử lý thông tin theo loại điện thoại
         if (type == 1) {
+            // Điện thoại chính hãng
             int warrantyPeriod = -1;
             while (warrantyPeriod <= 0 || warrantyPeriod > 730) {
                 System.out.print("Nhập thời gian bảo hành (tối đa 730 ngày): ");
@@ -95,6 +109,7 @@ public class PhoneController {
 
             phoneList.add(new OfficialPhone(id, name, price, quantity, manufacturer, warrantyPeriod, warrantyScope));
         } else if (type == 2) {
+            // Điện thoại xách tay
             System.out.print("Nhập quốc gia xách tay: ");
             String importedCountry = scanner.nextLine().trim();
             while (importedCountry.equals("Viet Nam")) {
@@ -114,25 +129,49 @@ public class PhoneController {
             phoneList.add(new ImportedPhone(id, name, price, quantity, manufacturer, importedCountry, status));
         } else {
             System.out.println("Loại điện thoại không hợp lệ!");
+            return;
         }
-
+        savePhonesToFile();
         System.out.println("Đã thêm điện thoại thành công với ID: " + id);
     }
+
 
     // Xóa điện thoại
     public void deletePhoneById(Scanner scanner) {
         System.out.print("Nhập ID điện thoại cần xóa: ");
-        String id = scanner.nextLine();
+        String id = scanner.nextLine().trim();
+
+        // Tìm điện thoại trong danh sách
         Phone phone = phoneList.stream()
                 .filter(p -> p.getId().equals(id))
                 .findFirst()
                 .orElse(null);
 
-        if (phone != null) {
+        // Nếu không tìm thấy, ném ngoại lệ
+        if (phone == null) {
+            try {
+                throw new NotFoundProductException("ID điện thoại không tồn tại.");
+            } catch (NotFoundProductException e) {
+                System.out.println(e.getMessage());
+            }
+            return; // Quay lại menu chính
+        }
+
+        // Yêu cầu xác nhận xóa
+        System.out.print("Bạn có chắc chắn muốn xóa điện thoại này? (Yes/No): ");
+        String confirm = scanner.nextLine().trim();
+
+        if (confirm.equalsIgnoreCase("Yes")) {
+            // Xóa điện thoại khỏi danh sách
             phoneList.remove(phone);
+
+            // Ghi lại danh sách vào file CSV
+            savePhonesToFile();
+
             System.out.println("Đã xóa điện thoại thành công!");
+            displayAllPhones(); // Hiển thị lại danh sách sau khi xóa
         } else {
-            System.out.println("Không tìm thấy điện thoại với ID: " + id);
+            System.out.println("Hủy bỏ thao tác xóa. Quay lại menu chính.");
         }
     }
 

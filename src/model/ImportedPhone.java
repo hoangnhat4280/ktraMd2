@@ -32,4 +32,17 @@ public class ImportedPhone extends Phone {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toCSV() {
+        return id + "," + name + "," + price + "," + quantity + "," + manufacturer + "," + importedCountry + "," + status;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", Quốc gia xách tay: " + importedCountry +
+                ", Trạng thái: " + status;
+    }
+
 }

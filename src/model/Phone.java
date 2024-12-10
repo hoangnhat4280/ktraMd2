@@ -56,4 +56,14 @@ public abstract class Phone {
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
     }
+    public abstract String toCSV();
+
+    @Override
+    public String toString() {
+        return "ID: " + id +
+                ", Tên: " + name +
+                ", Giá: " + price +
+                ", Số lượng: " + quantity +
+                ", Nhà sản xuất: " + manufacturer;
+    }
 }

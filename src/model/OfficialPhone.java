@@ -32,4 +32,18 @@ public class OfficialPhone extends Phone {
     public void setWarrantyScope(String warrantyScope) {
         this.warrantyScope = warrantyScope;
     }
+
+    @Override
+    public String toCSV() {
+        return id + "," + name + "," + price + "," + quantity + "," + manufacturer + "," + warrantyPeriod + "," + warrantyScope;
+    }
+
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", Thời gian bảo hành: " + warrantyPeriod + " ngày" +
+                ", Phạm vi bảo hành: " + warrantyScope;
+    }
+
 }
